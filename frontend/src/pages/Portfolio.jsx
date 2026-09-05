@@ -12,16 +12,12 @@ import PinVerificationModal from "../components/PinVerificationModal";
 import ToastNotification from "../components/ToastNotification";
 import CustomCursor from "../components/CustomCursor";
 import Canvas3DBackground from "../components/Canvas3DBackground";
-import ParallaxBackground from "../components/ParallaxBackground";
 
 export default function Portfolio() {
   return (
     <div className="bg-[#05050a] text-slate-100 min-h-screen selection:bg-violet-600 selection:text-white relative overflow-x-hidden">
       {/* Interactive WebGL / Canvas 3D Background */}
       <Canvas3DBackground />
-
-      {/* Multi-Layer Cinematic Parallax Background */}
-      <ParallaxBackground />
 
       <ToastNotification />
       <CustomCursor />

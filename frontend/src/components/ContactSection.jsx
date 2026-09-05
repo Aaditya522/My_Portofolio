@@ -67,7 +67,7 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 w-full">
           {/* Left Column - 3D Contact Details Card */}
           <ScrollReveal delay={150} className="lg:col-span-5">
-            <ThreeDCard index={0} maxTilt={10} scaleOnHover={1.01} className="w-full h-full">
+            <ThreeDCard maxTilt={10} scaleOnHover={1.01} className="w-full h-full">
               <div className="bg-slate-900/85 border border-slate-800/90 rounded-3xl p-7 sm:p-8 space-y-6 shadow-2xl backdrop-blur-xl h-full flex flex-col justify-between overflow-hidden preserve-3d">
                 <div className="space-y-6 preserve-3d translate-z-30">
                   <h3 className="text-2xl font-bold text-white tracking-tight">Contact Information</h3>
@@ -115,7 +115,7 @@ export default function ContactSection() {
 
           {/* Right Column - Wired 3D Contact Form */}
           <ScrollReveal delay={300} className="lg:col-span-7">
-            <ThreeDCard index={1} maxTilt={8} scaleOnHover={1.01} className="w-full">
+            <ThreeDCard maxTilt={8} scaleOnHover={1.01} className="w-full">
               <form onSubmit={handleSubmit} className="bg-slate-900/85 border border-slate-800/90 rounded-3xl p-7 sm:p-8 space-y-5 shadow-2xl backdrop-blur-xl overflow-hidden preserve-3d">
                 <h3 className="text-2xl font-bold text-white mb-2 preserve-3d translate-z-30 tracking-tight">Send a Message</h3>
 
