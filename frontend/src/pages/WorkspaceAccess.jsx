@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWorkspace } from "../context/WorkspaceContext";
 import {
@@ -12,66 +12,123 @@ import {
   Trash2,
   Check,
   Copy,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
 } from "lucide-react";
 
 export default function WorkspaceAccess() {
   const [activeTab, setActiveTab] = useState("create"); // 'create' | 'enter'
   const [customIdInput, setCustomIdInput] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [enterIdInput, setEnterIdInput] = useState("");
+  const [enterPassword, setEnterPassword] = useState("");
+  const [showEnterPassword, setShowEnterPassword] = useState(false);
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const enterPasswordInputRef = useRef(null);
+
   const {
-    enterWorkspace,
+    createWorkspace,
+    unlockWorkspace,
     generateNewWorkspaceId,
     workspaceId,
+    isUnlocked,
+    lockWorkspace,
     savedWorkspaces,
     removeSavedWorkspace,
   } = useWorkspace();
 
   const navigate = useNavigate();
 
-  const handleCreateCustomWorkspace = (e) => {
+  const handleCreateCustomWorkspace = async (e) => {
     e.preventDefault();
     setError("");
 
-    const targetId = customIdInput.trim();
+    const targetId = customIdInput.trim().toLowerCase();
     if (!targetId) {
-      setError("Please enter a custom Workspace ID or click 'Generate Unique ID'");
+      setError("Please enter a custom Workspace ID or click 'Auto-Generate'");
       return;
     }
 
-    const res = enterWorkspace(targetId);
+    if (targetId.length < 3) {
+      setError("Workspace ID must be at least 3 characters long");
+      return;
+    }
+
+    if (!createPassword) {
+      setError("Please enter a secure password for this workspace");
+      return;
+    }
+
+    if (createPassword.length < 4) {
+      setError("Password must be at least 4 characters long");
+      return;
+    }
+
+    if (!confirmPassword) {
+      setError("Please confirm your workspace password");
+      return;
+    }
+
+    if (createPassword !== confirmPassword) {
+      setError("Passwords do not match. Please verify both password fields.");
+      return;
+    }
+
+    setLoading(true);
+    const res = await createWorkspace(targetId, createPassword, confirmPassword);
+    setLoading(false);
+
     if (res.success) {
       navigate("/dashboard");
     } else {
-      setError(res.error);
+      setError(res.error || "Failed to create workspace");
     }
   };
 
-  const handleEnterWorkspace = (e) => {
+  const handleEnterWorkspace = async (e) => {
     e.preventDefault();
     setError("");
 
-    const targetId = enterIdInput.trim();
+    const targetId = enterIdInput.trim().toLowerCase();
     if (!targetId) {
       setError("Please enter your existing Workspace ID");
       return;
     }
 
-    const res = enterWorkspace(targetId);
+    if (!enterPassword) {
+      setError("Please enter the workspace password");
+      return;
+    }
+
+    setLoading(true);
+    const res = await unlockWorkspace(targetId, enterPassword);
+    setLoading(false);
+
     if (res.success) {
       navigate("/dashboard");
     } else {
-      setError(res.error);
+      setError(res.error || "Incorrect password or workspace error");
     }
   };
 
   const handleQuickSelectWorkspace = (id) => {
-    const res = enterWorkspace(id);
-    if (res.success) {
-      navigate("/dashboard");
-    }
+    setActiveTab("enter");
+    setEnterIdInput(id);
+    setEnterPassword("");
+    setError("");
+    setTimeout(() => {
+      enterPasswordInputRef.current?.focus();
+    }, 100);
   };
 
   const handleGenerateRandomId = () => {
@@ -92,12 +149,12 @@ export default function WorkspaceAccess() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Background Decorative Gradients */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-600/15 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-[350px] h-[350px] bg-teal-500/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[350px] h-[350px] bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="w-full max-w-xl relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-green-400 p-0.5 shadow-xl shadow-emerald-500/20 mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-indigo-500 p-0.5 shadow-xl shadow-emerald-500/20 mb-4">
             <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
               <Code2 className="w-7 h-7 text-emerald-400" />
             </div>
@@ -106,7 +163,7 @@ export default function WorkspaceAccess() {
             Application Workspace
           </h1>
           <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
-            No login or password needed. Create your manual unique Workspace ID to access your personal dashboard anytime.
+            Secure, password-protected developer workspaces. Create or unlock your workspace with your unique credentials.
           </p>
         </div>
 
@@ -114,21 +171,67 @@ export default function WorkspaceAccess() {
         <div className="bg-slate-900/90 border border-slate-800 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl shadow-black/50">
           {/* Active Workspace Banner */}
           {workspaceId && (
-            <div className="mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between">
+            <div
+              className={`mb-6 p-4 rounded-xl border flex items-center justify-between transition ${
+                isUnlocked
+                  ? "bg-emerald-500/10 border-emerald-500/30"
+                  : "bg-amber-500/10 border-amber-500/30"
+              }`}
+            >
               <div>
-                <div className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
-                  Active Workspace ID
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-[11px] font-semibold uppercase tracking-wider ${
+                      isUnlocked ? "text-emerald-300" : "text-amber-400"
+                    }`}
+                  >
+                    Active Workspace ID
+                  </span>
+                  <span
+                    className={`px-2 py-0.2 rounded text-[10px] font-bold ${
+                      isUnlocked
+                        ? "bg-emerald-500/20 text-emerald-300"
+                        : "bg-amber-500/20 text-amber-300"
+                    }`}
+                  >
+                    {isUnlocked ? "Unlocked" : "Locked"}
+                  </span>
                 </div>
                 <div className="text-sm font-mono text-white font-bold">{workspaceId}</div>
               </div>
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard")}
-                className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 transition shadow-md shadow-emerald-600/20 flex items-center gap-1.5"
-              >
-                <span>Open Dashboard</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+
+              <div className="flex items-center gap-2">
+                {isUnlocked ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={lockWorkspace}
+                      className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold transition flex items-center gap-1.5"
+                      title="Lock workspace"
+                    >
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>Lock</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate("/dashboard")}
+                      className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500 transition shadow-md shadow-emerald-600/20 flex items-center gap-1.5"
+                    >
+                      <span>Open Dashboard</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleQuickSelectWorkspace(workspaceId)}
+                    className="px-4 py-2 rounded-xl bg-amber-600 text-white text-xs font-bold hover:bg-amber-500 transition shadow-md shadow-amber-600/20 flex items-center gap-1.5"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Enter Password</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
@@ -147,7 +250,7 @@ export default function WorkspaceAccess() {
               }`}
             >
               <PlusCircle className="w-4 h-4" />
-              <span>Create Manual ID</span>
+              <span>Create Workspace</span>
             </button>
 
             <button
@@ -163,7 +266,7 @@ export default function WorkspaceAccess() {
               }`}
             >
               <FolderKey className="w-4 h-4" />
-              <span>Enter Existing ID</span>
+              <span>Unlock Existing ID</span>
             </button>
           </div>
 
@@ -174,14 +277,14 @@ export default function WorkspaceAccess() {
             </div>
           )}
 
-          {/* TAB 1: Create Manual Unique Workspace ID */}
+          {/* TAB 1: Create Manual Password-Protected Workspace */}
           {activeTab === "create" && (
-            <form onSubmit={handleCreateCustomWorkspace} className="space-y-5">
+            <form onSubmit={handleCreateCustomWorkspace} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider flex items-center justify-between">
-                  <span>Define Your Manual Workspace ID</span>
+                  <span>Unique Workspace ID</span>
                   <span className="text-slate-500 text-[11px] normal-case font-normal">
-                    e.g. my_personal_ws
+                    lowercase, numbers, dashes
                   </span>
                 </label>
 
@@ -196,7 +299,7 @@ export default function WorkspaceAccess() {
                       setCustomIdInput(e.target.value);
                       setError("");
                     }}
-                    placeholder="Enter your custom unique ID (e.g. alex_dev_space)"
+                    placeholder="e.g. dev_workspace_alpha"
                     className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl pl-11 pr-24 py-3 text-white text-sm font-mono placeholder:text-slate-600 focus:outline-none transition shadow-inner"
                   />
                   {customIdInput && (
@@ -213,24 +316,100 @@ export default function WorkspaceAccess() {
                     </button>
                   )}
                 </div>
-                <p className="mt-2 text-[11px] text-slate-400">
-                  Pick any custom unique identifier you like. Use this ID anytime on any device to return to your workspace.
-                </p>
+              </div>
+
+              {/* Password Field */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider flex items-center justify-between">
+                  <span>Workspace Password</span>
+                  <span className="text-slate-500 text-[11px] normal-case font-normal">
+                    min. 4 characters
+                  </span>
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3.5 text-slate-400 pointer-events-none">
+                    <Lock className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <input
+                    type={showCreatePassword ? "text" : "password"}
+                    value={createPassword}
+                    onChange={(e) => {
+                      setCreatePassword(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="Create a strong password"
+                    className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl pl-11 pr-11 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none transition shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCreatePassword(!showCreatePassword)}
+                    className="absolute right-3 p-1 text-slate-400 hover:text-slate-200 transition"
+                  >
+                    {showCreatePassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Field */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+                  Confirm Password
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3.5 text-slate-400 pointer-events-none">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  </div>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="Re-enter password to verify"
+                    className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl pl-11 pr-11 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none transition shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 p-1 text-slate-400 hover:text-slate-200 transition"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                 <button
                   type="submit"
-                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95"
+                  disabled={loading}
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-sm transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
                 >
-                  <PlusCircle className="w-4 h-4" />
-                  <span>Save & Access Workspace</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Creating & Protecting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <PlusCircle className="w-4 h-4" />
+                      <span>Create & Unlock Workspace</span>
+                    </>
+                  )}
                 </button>
 
                 <button
                   type="button"
                   onClick={handleGenerateRandomId}
-                  className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs transition flex items-center justify-center gap-2 active:scale-95 shrink-0"
+                  className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs transition flex items-center justify-center gap-2 active:scale-95 shrink-0 cursor-pointer"
                 >
                   <Sparkles className="w-4 h-4 text-amber-400" />
                   <span>Auto-Generate</span>
@@ -239,12 +418,12 @@ export default function WorkspaceAccess() {
             </form>
           )}
 
-          {/* TAB 2: Enter Existing Workspace ID */}
+          {/* TAB 2: Enter & Unlock Existing Workspace */}
           {activeTab === "enter" && (
-            <form onSubmit={handleEnterWorkspace} className="space-y-5">
+            <form onSubmit={handleEnterWorkspace} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
-                  Enter Existing Workspace ID
+                  Workspace ID
                 </label>
                 <div className="relative flex items-center">
                   <div className="absolute left-3.5 text-slate-400 pointer-events-none">
@@ -263,12 +442,55 @@ export default function WorkspaceAccess() {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+                  Workspace Password
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3.5 text-slate-400 pointer-events-none">
+                    <Lock className="w-4 h-4 text-teal-400" />
+                  </div>
+                  <input
+                    ref={enterPasswordInputRef}
+                    type={showEnterPassword ? "text" : "password"}
+                    value={enterPassword}
+                    onChange={(e) => {
+                      setEnterPassword(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="Enter workspace password"
+                    className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl pl-11 pr-11 py-3 text-white text-sm placeholder:text-slate-600 focus:outline-none transition shadow-inner"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEnterPassword(!showEnterPassword)}
+                    className="absolute right-3 p-1 text-slate-400 hover:text-slate-200 transition"
+                  >
+                    {showEnterPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
               <button
                 type="submit"
-                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95"
+                disabled={loading}
+                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-sm transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
               >
-                <span>Open Workspace</span>
-                <ArrowRight className="w-4 h-4" />
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verifying Password...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4" />
+                    <span>Unlock & Open Workspace</span>
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -292,7 +514,7 @@ export default function WorkspaceAccess() {
                     >
                       <KeyRound className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-400" />
                       <span className="truncate">{savedId}</span>
-                      {savedId === workspaceId && (
+                      {savedId === workspaceId && isUnlocked && (
                         <span className="px-2 py-0.5 rounded text-[10px] font-sans font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                           Active
                         </span>
@@ -303,9 +525,10 @@ export default function WorkspaceAccess() {
                       <button
                         type="button"
                         onClick={() => handleQuickSelectWorkspace(savedId)}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-[11px] font-bold transition"
+                        className="px-2.5 py-1 rounded-lg bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-[11px] font-bold transition flex items-center gap-1"
                       >
-                        Enter
+                        <Lock className="w-3 h-3" />
+                        <span>Unlock</span>
                       </button>
                       <button
                         type="button"
@@ -326,7 +549,7 @@ export default function WorkspaceAccess() {
           <div className="mt-6 pt-5 border-t border-slate-800/80 flex items-start gap-3 text-slate-400 text-xs">
             <ShieldCheck className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
             <p>
-              Creating a manual unique Workspace ID allows you to isolate your developer tasks, expenses, and GitHub branches under your own custom key.
+              Each workspace is protected with bcrypt password encryption. You must enter your workspace password each time to unlock your tasks, expenses, and GitHub branches.
             </p>
           </div>
         </div>
@@ -335,7 +558,7 @@ export default function WorkspaceAccess() {
         <div className="text-center mt-6">
           <button
             onClick={() => navigate("/")}
-            className="text-xs text-slate-500 hover:text-slate-300 transition underline"
+            className="text-xs text-slate-500 hover:text-slate-300 transition underline cursor-pointer"
           >
             ← Back to Public Portfolio
           </button>

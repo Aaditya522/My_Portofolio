@@ -10,13 +10,17 @@ import githubBranchRoutes from "./routes/githubBranchRoutes.js";
 import githubActivityRoutes from "./routes/githubActivityRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import portfolioProfileRoutes from "./routes/portfolioProfileRoutes.js";
+import workspaceRoutes from "./routes/workspaceRoutes.js";
+import { migrateLegacyWorkspaces } from "./services/workspaceMigrationService.js";
 
 import path from "path";
 
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB and secure legacy workspaces
+connectDB().then(() => {
+  migrateLegacyWorkspaces();
+});
 
 const app = express();
 
@@ -40,6 +44,7 @@ app.get("/api/health", (req, res) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/github-branches", githubBranchRoutes);
 app.use("/api/github-activity", githubActivityRoutes);

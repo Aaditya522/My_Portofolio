@@ -5,6 +5,7 @@ import Portfolio from "./pages/Portfolio";
 import WorkspaceAccess from "./pages/WorkspaceAccess";
 import DashboardLayout from "./layouts/DashboardLayout";
 import WorkWorkspace from "./pages/WorkWorkspace";
+import WorkspaceUnlockModal from "./components/WorkspaceUnlockModal";
 
 function FaviconManager() {
   const location = useLocation();
@@ -34,10 +35,14 @@ function FaviconManager() {
 }
 
 function ProtectedRoute({ children }) {
-  const { hasWorkspace } = useWorkspace();
+  const { hasWorkspace, isUnlocked } = useWorkspace();
 
   if (!hasWorkspace) {
     return <Navigate to="/workspace" replace />;
+  }
+
+  if (!isUnlocked) {
+    return <WorkspaceUnlockModal />;
   }
 
   return children;

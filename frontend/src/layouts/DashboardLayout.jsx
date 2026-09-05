@@ -12,10 +12,11 @@ import {
   KeyRound,
   Copy,
   Check,
+  Lock,
 } from "lucide-react";
 
 export default function DashboardLayout() {
-  const { workspaceId, leaveWorkspace } = useWorkspace();
+  const { workspaceId, leaveWorkspace, lockWorkspace } = useWorkspace();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -168,13 +169,24 @@ export default function DashboardLayout() {
             </div>
           </div>
 
-          <button
-            onClick={handleSwitchWorkspace}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition active:scale-95 cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5 text-slate-400" />
-            <span>Switch Workspace</span>
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={lockWorkspace}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition active:scale-95 cursor-pointer"
+              title="Lock workspace immediately"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>Lock</span>
+            </button>
+
+            <button
+              onClick={handleSwitchWorkspace}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition active:scale-95 cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5 text-slate-400" />
+              <span>Switch</span>
+            </button>
+          </div>
         </div>
       </aside>
 
