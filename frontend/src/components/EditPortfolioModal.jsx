@@ -43,6 +43,7 @@ export default function EditPortfolioModal() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null); // { type: 'success'|'error', text: string }
+  const [previewError, setPreviewError] = useState(false);
   const fileInputRef = useRef(null);
   const resumeFileInputRef = useRef(null);
 
@@ -60,6 +61,7 @@ export default function EditPortfolioModal() {
         ...copy,
         pin: verifiedPin || "ty]:LO1c",
       });
+      setPreviewError(false);
     }
   }, [profile, isEditModalOpen, verifiedPin]);
 
@@ -263,7 +265,6 @@ export default function EditPortfolioModal() {
     return url.startsWith("/") ? `${apiBase}${url}` : `${apiBase}/${url}`;
   };
 
-  const [previewError, setPreviewError] = useState(false);
   const previewAvatarSrc = previewError ? "/profile-avatar.png" : getAvatarSrc(formData.avatarUrl);
 
   return (
