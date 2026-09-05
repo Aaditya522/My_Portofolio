@@ -3,6 +3,7 @@ import { FileText, Github, Linkedin, Sparkles, ArrowUpRight, GraduationCap, Brie
 import { usePortfolio } from "../context/PortfolioContext";
 import SectionFluidGlow from "./SectionFluidGlow";
 import ThreeDCard from "./ThreeDCard";
+import ParallaxItem from "./ParallaxItem";
 
 export default function HeroSection() {
   const { profile } = usePortfolio();
@@ -111,8 +112,8 @@ export default function HeroSection() {
           <span className="animate-pulse text-cyan-400 font-normal ml-1">|</span>
         </h1>
 
-        {/* Central 3D Interactive Profile & Bio Card */}
-        <div className="max-w-4xl mx-auto mb-14">
+        {/* Central 3D Interactive Profile & Bio Card with Scroll Parallax */}
+        <ParallaxItem speed={0.06} className="max-w-4xl mx-auto mb-14">
           <ThreeDCard maxTilt={12} scaleOnHover={1.02} glareOpacity={0.2} className="w-full">
             <div className="p-7 sm:p-8 rounded-3xl bg-slate-900/80 border border-slate-800/90 shadow-2xl backdrop-blur-2xl flex flex-col sm:flex-row items-center gap-7 text-left overflow-hidden preserve-3d">
               {/* Glowing Aura overlay */}
@@ -150,7 +151,7 @@ export default function HeroSection() {
               </div>
             </div>
           </ThreeDCard>
-        </div>
+        </ParallaxItem>
 
         {/* Action Magnetic CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-16">

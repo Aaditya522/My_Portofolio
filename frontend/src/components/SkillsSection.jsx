@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
 import ScrollReveal from "./ScrollReveal";
+import ParallaxItem from "./ParallaxItem";
 import ThreeDCard from "./ThreeDCard";
 import { getSkillProficiency } from "./EditPortfolioModal";
 
@@ -117,59 +118,61 @@ export default function SkillsSection() {
 
       <div className="w-full px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto">
         {/* Section Header */}
-        <ScrollReveal className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-950/80 border border-violet-500/30 text-violet-300 text-xs font-bold uppercase tracking-wider mb-5 shadow-lg shadow-violet-900/20 backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
-            <span>Interactive 3D Stack & Capabilities</span>
-          </div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
-            Technical <span className="bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-400 bg-clip-text text-transparent">Proficiency & Skillset</span>
-          </h2>
-          <p className="text-slate-400 mt-4 text-base sm:text-lg leading-relaxed">
-            Hover over skill cards to experience full 3D tilt perspective, depth layering, and live technical breakdown.
-          </p>
+        <ParallaxItem speed={-0.04}>
+          <ScrollReveal className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-950/80 border border-violet-500/30 text-violet-300 text-xs font-bold uppercase tracking-wider mb-5 shadow-lg shadow-violet-900/20 backdrop-blur-md">
+              <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
+              <span>Interactive 3D Stack & Capabilities</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+              Technical <span className="bg-gradient-to-r from-violet-400 via-fuchsia-300 to-cyan-400 bg-clip-text text-transparent">Proficiency & Skillset</span>
+            </h2>
+            <p className="text-slate-400 mt-4 text-base sm:text-lg leading-relaxed">
+              Hover over skill cards to experience full 3D tilt perspective, depth layering, and live technical breakdown.
+            </p>
 
-          {/* 3D Filter Category Tabs & Collapse Toggle */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8">
-            {categories.map((cat) => (
+            {/* 3D Filter Category Tabs & Collapse Toggle */}
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-8">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    if (isCollapsed) setIsCollapsed(false);
+                  }}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 backdrop-blur-md cursor-pointer ${
+                    activeCategory === cat
+                      ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25 scale-105 border border-violet-400/50"
+                      : "bg-slate-900/70 text-slate-400 border border-slate-800 hover:border-slate-700 hover:text-white"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+
+              {/* Single Compact Collapse / Expand Toggle Button */}
               <button
-                key={cat}
                 type="button"
-                onClick={() => {
-                  setActiveCategory(cat);
-                  if (isCollapsed) setIsCollapsed(false);
-                }}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 backdrop-blur-md cursor-pointer ${
-                  activeCategory === cat
-                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25 scale-105 border border-violet-400/50"
-                    : "bg-slate-900/70 text-slate-400 border border-slate-800 hover:border-slate-700 hover:text-white"
-                }`}
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 bg-slate-900/80 border border-slate-800 hover:border-violet-500/40 text-slate-300 hover:text-white backdrop-blur-md shadow-sm active:scale-95 cursor-pointer ml-1 sm:ml-2"
+                title={isCollapsed ? "Expand Skills Section" : "Collapse Skills Section"}
               >
-                {cat}
+                {isCollapsed ? (
+                  <>
+                    <ChevronDown className="w-3.5 h-3.5 text-violet-400" />
+                    <span>Expand</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp className="w-3.5 h-3.5 text-violet-400" />
+                    <span>Collapse</span>
+                  </>
+                )}
               </button>
-            ))}
-
-            {/* Single Compact Collapse / Expand Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 bg-slate-900/80 border border-slate-800 hover:border-violet-500/40 text-slate-300 hover:text-white backdrop-blur-md shadow-sm active:scale-95 cursor-pointer ml-1 sm:ml-2"
-              title={isCollapsed ? "Expand Skills Section" : "Collapse Skills Section"}
-            >
-              {isCollapsed ? (
-                <>
-                  <ChevronDown className="w-3.5 h-3.5 text-violet-400" />
-                  <span>Expand</span>
-                </>
-              ) : (
-                <>
-                  <ChevronUp className="w-3.5 h-3.5 text-violet-400" />
-                  <span>Collapse</span>
-                </>
-              )}
-            </button>
-          </div>
-        </ScrollReveal>
+            </div>
+          </ScrollReveal>
+        </ParallaxItem>
 
         {/* Skills Cards 3D Grid */}
         {!isCollapsed && (
@@ -186,6 +189,7 @@ export default function SkillsSection() {
                 >
                   <ThreeDCard
                     className="w-full h-full"
+                    index={index}
                     maxTilt={18}
                     scaleOnHover={1.04}
                     glareOpacity={0.3}

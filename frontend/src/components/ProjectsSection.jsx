@@ -3,6 +3,7 @@ import { ExternalLink, Github, ArrowUpRight, FolderGit2, Trash2, Pencil, Code2, 
 import { usePortfolio } from "../context/PortfolioContext";
 import ScrollReveal from "./ScrollReveal";
 import ThreeDCard from "./ThreeDCard";
+import ParallaxItem from "./ParallaxItem";
 
 export default function ProjectsSection() {
   const { profile, openAddProjectModal, openEditProjectModal, deleteProject, verifiedPin, openPinModal } = usePortfolio();
@@ -27,52 +28,54 @@ export default function ProjectsSection() {
 
       <div className="w-full px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto">
         {/* Section Header */}
-        <ScrollReveal className="text-center max-w-3xl mx-auto mb-16">
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-lg shadow-cyan-950/40">
-              <FolderGit2 className="w-4 h-4 text-cyan-400" />
-              <span>Interactive Portfolio</span>
+        <ParallaxItem speed={-0.04}>
+          <ScrollReveal className="text-center max-w-3xl mx-auto mb-16">
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-5">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-lg shadow-cyan-950/40">
+                <FolderGit2 className="w-4 h-4 text-cyan-400" />
+                <span>Interactive Portfolio</span>
+              </div>
+
+              {/* Header Add Project Option Button */}
+              <button
+                type="button"
+                onClick={openAddProjectModal}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold transition shadow-lg shadow-violet-600/25 active:scale-95 cursor-pointer"
+                title="Add New Project (PIN Required)"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Project</span>
+              </button>
+
+              {/* Header Collapse / Expand Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-white backdrop-blur-md shadow-sm active:scale-95 cursor-pointer"
+                title={isCollapsed ? "Expand Projects Section" : "Collapse Projects Section"}
+              >
+                {isCollapsed ? (
+                  <>
+                    <ChevronDown className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Expand</span>
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Collapse</span>
+                  </>
+                )}
+              </button>
             </div>
 
-            {/* Header Add Project Option Button */}
-            <button
-              type="button"
-              onClick={openAddProjectModal}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs font-bold transition shadow-lg shadow-violet-600/25 active:scale-95 cursor-pointer"
-              title="Add New Project (PIN Required)"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Project</span>
-            </button>
-
-            {/* Header Collapse / Expand Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-white backdrop-blur-md shadow-sm active:scale-95 cursor-pointer"
-              title={isCollapsed ? "Expand Projects Section" : "Collapse Projects Section"}
-            >
-              {isCollapsed ? (
-                <>
-                  <ChevronDown className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Expand</span>
-                </>
-              ) : (
-                <>
-                  <ChevronUp className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Collapse</span>
-                </>
-              )}
-            </button>
-          </div>
-
-          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
-            Featured <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">Projects & Engineering</span>
-          </h2>
-          <p className="text-slate-400 mt-4 text-base sm:text-lg leading-relaxed">
-            Full-stack web applications featuring dynamic state management, custom database schemas, and responsive UI design.
-          </p>
-        </ScrollReveal>
+            <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+              Featured <span className="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">Projects & Engineering</span>
+            </h2>
+            <p className="text-slate-400 mt-4 text-base sm:text-lg leading-relaxed">
+              Full-stack web applications featuring dynamic state management, custom database schemas, and responsive UI design.
+            </p>
+          </ScrollReveal>
+        </ParallaxItem>
 
         {/* Projects Cards Grid */}
         {!isCollapsed && (
@@ -84,6 +87,7 @@ export default function ProjectsSection() {
               >
                 <ThreeDCard
                   className="w-full h-full"
+                  index={index}
                   horizontalOnly={true}
                   maxHorizontalShift={16}
                   scaleOnHover={1.02}
