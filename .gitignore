@@ -20,6 +20,7 @@ build/
 # Uploaded assets (keep the directory structure, ignore user files)
 backend/uploads/*
 !backend/uploads/.gitkeep
+!backend/uploads/avatar-1784986591071-76696101.png
 
 # Logs and debug
 logs/

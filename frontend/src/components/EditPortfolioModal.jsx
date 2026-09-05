@@ -252,15 +252,19 @@ export default function EditPortfolioModal() {
   };
 
   const getAvatarSrc = (url) => {
-    if (!url) return "";
+    if (!url) return "/profile-avatar.png";
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
       return url;
     }
-    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const apiBase = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5000");
+    if (!apiBase) {
+      return url.startsWith("/") ? url : `/${url}`;
+    }
     return url.startsWith("/") ? `${apiBase}${url}` : `${apiBase}/${url}`;
   };
 
-  const previewAvatarSrc = getAvatarSrc(formData.avatarUrl);
+  const [previewError, setPreviewError] = useState(false);
+  const previewAvatarSrc = previewError ? "/profile-avatar.png" : getAvatarSrc(formData.avatarUrl);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md overflow-y-auto">
@@ -439,10 +443,7 @@ export default function EditPortfolioModal() {
                         src={previewAvatarSrc}
                         alt="Preview"
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.style.display = 'none';
-                        }}
+                        onError={() => setPreviewError(true)}
                       />
                     ) : (
                       <User className="w-6 h-6 text-emerald-700" />

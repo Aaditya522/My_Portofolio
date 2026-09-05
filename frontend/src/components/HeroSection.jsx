@@ -50,15 +50,35 @@ export default function HeroSection() {
   }, [displayText, isDeleting, currentRoleIndex, roles]);
 
   const getAvatarSrc = (url) => {
-    if (!url) return "";
+    if (!url) return "/profile-avatar.png";
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:")) {
       return url;
     }
-    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    const apiBase = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5000");
+    if (!apiBase) {
+      return url.startsWith("/") ? url : `/${url}`;
+    }
     return url.startsWith("/") ? `${apiBase}${url}` : `${apiBase}/${url}`;
   };
 
-  const avatarSrc = getAvatarSrc(profile?.avatarUrl);
+  const [imgSrc, setImgSrc] = useState(() => getAvatarSrc(profile?.avatarUrl) || "/profile-avatar.png");
+  const [imgFailed, setImgFailed] = useState(false);
+
+  useEffect(() => {
+    const resolved = getAvatarSrc(profile?.avatarUrl);
+    setImgSrc(resolved || "/profile-avatar.png");
+    setImgFailed(false);
+  }, [profile?.avatarUrl]);
+
+  const handleImgError = () => {
+    if (imgSrc !== "/profile-avatar.png") {
+      // Primary fallback: bundled public avatar in frontend
+      setImgSrc("/profile-avatar.png");
+    } else {
+      // Secondary fallback: initials avatar
+      setImgFailed(true);
+    }
+  };
 
   return (
     <section ref={heroRef} id="hero" className="relative min-h-screen pt-36 pb-24 flex items-center justify-center overflow-hidden">
@@ -101,15 +121,12 @@ export default function HeroSection() {
               {/* Profile Avatar Container (Pops translateZ 40px) */}
               <div className="relative shrink-0 group preserve-3d translate-z-40">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-2 border-cyan-500/80 shadow-xl shadow-cyan-950 bg-slate-950 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
-                  {avatarSrc ? (
+                  {!imgFailed ? (
                     <img
-                      src={avatarSrc}
+                      src={imgSrc}
                       alt={profile?.fullName || "Profile Picture"}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.style.display = 'none';
-                      }}
+                      onError={handleImgError}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-cyan-300 font-black text-3xl bg-gradient-to-tr from-cyan-950 to-slate-900">
