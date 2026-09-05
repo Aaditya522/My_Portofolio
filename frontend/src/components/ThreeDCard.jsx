@@ -1,9 +1,10 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 
 /**
  * ThreeDCard Component
- * Wraps content in a Perspective card with interactive mouse tracking.
- * Supports full 3D tilt or horizontal-only smooth translation mode without bending/vertical shift.
+ * Wraps content in an interactive 3D perspective card.
+ * Automatically disables hover tilt and transforms on mobile / touch screen ratios
+ * for silky-smooth scrolling, responsive clicks, and zero sticking on touch devices.
  */
 export default function ThreeDCard({
   children,
@@ -17,6 +18,23 @@ export default function ThreeDCard({
   onClick,
 }) {
   const cardRef = useRef(null);
+  const [isTouchOrMobile, setIsTouchOrMobile] = useState(false);
+
+  // Detect mobile or touch devices (phone screen ratios & coarse pointers)
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobile =
+        window.innerWidth <= 768 ||
+        window.matchMedia("(hover: none)").matches ||
+        window.matchMedia("(pointer: coarse)").matches;
+      setIsTouchOrMobile(isMobile);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const [transform, setTransform] = useState({
     rotateX: 0,
     rotateY: 0,
@@ -29,7 +47,7 @@ export default function ThreeDCard({
 
   const handleMouseMove = useCallback(
     (e) => {
-      if (!cardRef.current) return;
+      if (isTouchOrMobile || !cardRef.current) return;
       const rect = cardRef.current.getBoundingClientRect();
       const width = rect.width;
       const height = rect.height;
@@ -42,7 +60,7 @@ export default function ThreeDCard({
       const py = mouseY / height;
 
       if (horizontalOnly) {
-        // Horizontal-only glide: strictly NO bending (rotateX=0, rotateY=0) and NO vertical shift (translateY=0)
+        // Horizontal-only glide: strictly NO bending (rotateX=0, rotateY=0) and NO vertical shift
         const translateX = (px - 0.5) * 2 * maxHorizontalShift;
         setTransform({
           rotateX: 0,
@@ -70,19 +88,31 @@ export default function ThreeDCard({
         opacity: glareOpacity,
       });
     },
-    [maxTilt, scaleOnHover, glareOpacity, horizontalOnly, maxHorizontalShift]
+    [isTouchOrMobile, maxTilt, scaleOnHover, glareOpacity, horizontalOnly, maxHorizontalShift]
   );
 
   const handleMouseEnter = () => {
-    setIsHovered(true);
+    if (!isTouchOrMobile) setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
-    setTransform({ rotateX: 0, rotateY: 0, translateX: 0, translateY: 0, scale: 1 });
-    setGlare((prev) => ({ ...prev, opacity: 0 }));
+    if (!isTouchOrMobile) {
+      setIsHovered(false);
+      setTransform({ rotateX: 0, rotateY: 0, translateX: 0, translateY: 0, scale: 1 });
+      setGlare((prev) => ({ ...prev, opacity: 0 }));
+    }
   };
 
+  // If on mobile screen ratio or touch device, render static container with no 3D hover/tilt
+  if (isTouchOrMobile) {
+    return (
+      <div onClick={onClick} className={`relative block w-full ${className}`}>
+        {children}
+      </div>
+    );
+  }
+
+  // Desktop rich 3D perspective experience
   return (
     <div
       ref={cardRef}

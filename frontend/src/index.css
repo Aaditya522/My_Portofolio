@@ -220,3 +220,69 @@
 .minimal-card-hover:hover {
   transform: translateY(-3px);
 }
+
+/* ==========================================================================
+   Mobile & Touch Screen Optimizations
+   Disables hover-based transforms, heavy 3D compositing, and GPU filter churn
+   on phone screen ratios and touch devices for buttery-smooth 60-120fps scrolling.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none), (pointer: coarse) {
+  /* Stop hover scale and translation animations on phone screens */
+  *:hover {
+    transform: none !important;
+  }
+
+  /* Disable continuous floating keyframes that consume GPU/CPU on mobile */
+  .animate-float-5d-1,
+  .animate-float-5d-2,
+  .animate-float-5d-3,
+  .animate-float-3d,
+  .animate-float-reverse-3d {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Eliminate 3D perspective layers to prevent compositing bottlenecks */
+  .preserve-3d {
+    transform-style: flat !important;
+  }
+
+  .translate-z-10,
+  .translate-z-20,
+  .translate-z-30,
+  .translate-z-40,
+  .translate-z-50 {
+    transform: none !important;
+  }
+
+  /* Optimize backdrop blur on mobile cards to prevent scroll stutter */
+  .backdrop-blur-xl,
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* Smooth momentum touch scrolling without fighting CSS smooth-scroll */
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Immediate reveal on mobile for instant visibility during scroll */
+  .reveal-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Remove 300ms tap delay and ensure instant responsive clicks */
+  button,
+  a,
+  input,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+}

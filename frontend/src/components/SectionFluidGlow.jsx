@@ -12,6 +12,21 @@ export default function SectionFluidGlow({ containerRef }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isInViewport, setIsInViewport] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check mobile / touch pointer
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile =
+        window.innerWidth <= 768 ||
+        window.matchMedia("(hover: none)").matches ||
+        window.matchMedia("(pointer: coarse)").matches;
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Check accessibility reduced motion setting
   useEffect(() => {
@@ -25,6 +40,7 @@ export default function SectionFluidGlow({ containerRef }) {
 
   // IntersectionObserver to pause calculations when section is out of viewport
   useEffect(() => {
+    if (isMobile) return;
     const container = containerRef?.current;
     if (!container) return;
 
@@ -37,12 +53,13 @@ export default function SectionFluidGlow({ containerRef }) {
 
     observer.observe(container);
     return () => observer.disconnect();
-  }, [containerRef]);
+  }, [containerRef, isMobile]);
 
-  // Mouse event listeners scoped strictly to section container
+  // Mouse event listeners scoped strictly to section container (desktop only)
   useEffect(() => {
+    if (isMobile || prefersReducedMotion) return;
     const container = containerRef?.current;
-    if (!container || prefersReducedMotion) return;
+    if (!container) return;
 
     const handleMouseMove = (e) => {
       const rect = container.getBoundingClientRect();
@@ -65,11 +82,11 @@ export default function SectionFluidGlow({ containerRef }) {
       container.removeEventListener("mouseenter", handleMouseEnter);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [containerRef, isVisible, prefersReducedMotion]);
+  }, [containerRef, isVisible, prefersReducedMotion, isMobile]);
 
-  // 60 FPS requestAnimationFrame loop with lerp easing & stretch physics
+  // 60 FPS requestAnimationFrame loop with lerp easing & stretch physics (desktop only)
   useEffect(() => {
-    if (!isInViewport || prefersReducedMotion) return;
+    if (isMobile || !isInViewport || prefersReducedMotion) return;
 
     let startTime = performance.now();
 
@@ -118,9 +135,9 @@ export default function SectionFluidGlow({ containerRef }) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isInViewport, prefersReducedMotion]);
+  }, [isInViewport, prefersReducedMotion, isMobile]);
 
-  if (prefersReducedMotion) return null;
+  if (isMobile || prefersReducedMotion) return null;
 
   return (
     <div
