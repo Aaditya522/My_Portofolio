@@ -6,7 +6,6 @@ import {
   User,
   Share2,
   List,
-  Sparkles,
   Plus,
   Trash2,
   CheckCircle,
@@ -274,7 +273,7 @@ export default function EditPortfolioModal() {
         <div className="p-5 bg-gradient-to-r from-emerald-100 via-teal-100/70 to-emerald-50 border-b border-emerald-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20">
-              <Sparkles className="w-5 h-5 font-bold" />
+              <User className="w-5 h-5 font-bold" />
             </div>
             <div>
               <h3 className="text-lg font-black text-emerald-950 tracking-tight">Edit Portfolio Information</h3>

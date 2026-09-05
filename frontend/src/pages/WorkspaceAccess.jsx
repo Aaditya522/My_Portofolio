@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useWorkspace } from "../context/WorkspaceContext";
 import {
   KeyRound,
-  Sparkles,
+  RefreshCw,
   ArrowRight,
   Code2,
   ShieldCheck,
@@ -411,7 +411,7 @@ export default function WorkspaceAccess() {
                   onClick={handleGenerateRandomId}
                   className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs transition flex items-center justify-center gap-2 active:scale-95 shrink-0 cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <RefreshCw className="w-4 h-4 text-amber-400" />
                   <span>Auto-Generate</span>
                 </button>
               </div>

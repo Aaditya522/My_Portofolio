@@ -16,7 +16,6 @@ import {
   Terminal,
   Wrench,
   Lock,
-  Sparkles,
   Globe,
   CheckCircle2,
   Cpu,
@@ -119,7 +118,6 @@ export default function SkillsSection() {
         {/* Section Header */}
         <ScrollReveal className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-950/80 border border-violet-500/30 text-violet-300 text-xs font-bold uppercase tracking-wider mb-5 shadow-lg shadow-violet-900/20 backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
             <span>Interactive 3D Stack & Capabilities</span>
           </div>
           <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">

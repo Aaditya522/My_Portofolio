@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { usePortfolio } from "../context/PortfolioContext";
-import { X, FolderPlus, Pencil, Sparkles, CheckCircle, AlertCircle, Loader2, Code2, ExternalLink, Github, Layers } from "lucide-react";
+import { X, FolderPlus, Pencil, CheckCircle, AlertCircle, Loader2, Code2, ExternalLink, Github, Layers } from "lucide-react";
 
 export default function AddProjectModal() {
   const { isAddProjectModalOpen, closeAddProjectModal, addProject, editProject, editingProject } = usePortfolio();
@@ -284,7 +284,7 @@ export default function AddProjectModal() {
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
+                  <FolderPlus className="w-4 h-4" />
                   <span>{isEditMode ? "Save Changes" : "Publish Project"}</span>
                 </>
               )}

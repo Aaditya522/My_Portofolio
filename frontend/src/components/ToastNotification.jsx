@@ -1,6 +1,6 @@
 import React from "react";
 import { usePortfolio } from "../context/PortfolioContext";
-import { CheckCircle2, AlertCircle, X, Sparkles } from "lucide-react";
+import { CheckCircle2, AlertCircle, X } from "lucide-react";
 
 export default function ToastNotification() {
   const { notification, closeNotification } = usePortfolio();
@@ -31,7 +31,6 @@ export default function ToastNotification() {
         <div className="flex-1 pt-0.5">
           <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1.5 mb-0.5">
             <span>{isSuccess ? "Success Notification" : "Action Alert"}</span>
-            <Sparkles className={`w-3 h-3 ${isSuccess ? "text-emerald-400" : "text-red-400"}`} />
           </h4>
           <p className="text-sm font-semibold text-white leading-snug">
             {notification.message}

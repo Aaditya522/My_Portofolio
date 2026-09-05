@@ -19,7 +19,7 @@ import {
   Cloud,
   Flame,
   PenTool,
-  Sparkles,
+  Bot,
 } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
 
@@ -35,7 +35,7 @@ const techLanguages = [
   { name: "Node.js", icon: Server, iconSize: "w-15 h-15 sm:w-17 sm:h-17", brandColor: "#339933", animClass: "animate-float-5d-3", floatDuration: 12.0, floatDelay: 1.4, offsetY: "translate-y-2" },
   { name: "Express.js", icon: Layers, iconSize: "w-10 h-10 sm:w-11 sm:h-11", brandColor: "#E0E0E0", animClass: "animate-float-5d-1", floatDuration: 9.2, floatDelay: 0.7, offsetY: "-translate-y-1" },
   { name: "MongoDB", icon: Database, iconSize: "w-13 h-13 sm:w-15 sm:h-15", brandColor: "#47A248", animClass: "animate-float-5d-2", floatDuration: 10.2, floatDelay: 2.3, offsetY: "translate-y-2" },
-  { name: "LLM & AI APIs", icon: Sparkles, iconSize: "w-13 h-13 sm:w-15 sm:h-15", brandColor: "#A855F7", animClass: "animate-float-5d-1", floatDuration: 11.2, floatDelay: 1.7, offsetY: "translate-y-1" },
+  { name: "LLM & AI APIs", icon: Bot, iconSize: "w-13 h-13 sm:w-15 sm:h-15", brandColor: "#A855F7", animClass: "animate-float-5d-1", floatDuration: 11.2, floatDelay: 1.7, offsetY: "translate-y-1" },
   { name: "HTML5", icon: Code2, iconSize: "w-14 h-14 sm:w-16 sm:h-16", brandColor: "#E34F26", animClass: "animate-float-5d-2", floatDuration: 10.5, floatDelay: 0.4, offsetY: "translate-y-2" },
   { name: "Tailwind", icon: Box, iconSize: "w-12 h-12 sm:w-13 sm:h-13", brandColor: "#06B6D4", animClass: "animate-float-5d-3", floatDuration: 9.9, floatDelay: 1.6, offsetY: "-translate-y-2" },
   { name: "Git & GitHub", icon: GitBranch, iconSize: "w-15 h-15 sm:w-17 sm:h-17", brandColor: "#F05032", animClass: "animate-float-5d-1", floatDuration: 12.2, floatDelay: 2.5, offsetY: "translate-y-1" },

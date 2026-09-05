@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FileText, Github, Linkedin, Sparkles, ArrowUpRight, GraduationCap, Briefcase, Code, Terminal } from "lucide-react";
+import { FileText, Github, Linkedin, ArrowUpRight, GraduationCap, Briefcase, Code, Terminal } from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
 import SectionFluidGlow from "./SectionFluidGlow";
 import ThreeDCard from "./ThreeDCard";
@@ -99,7 +99,6 @@ export default function HeroSection() {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
           </span>
           <span>{profile?.tagline || "Software Engineering Intern & Full Stack Developer"}</span>
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
         </div>
 
         {/* Main 3D Hero Heading with Indigo, Cyan & Emerald Gradient */}
@@ -133,9 +132,6 @@ export default function HeroSection() {
                       {profile?.fullName ? profile.fullName.split(" ").map((n) => n[0]).join("") : "AB"}
                     </div>
                   )}
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-cyan-500 border-2 border-slate-900 flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-4 h-4 text-white" />
                 </div>
               </div>
 

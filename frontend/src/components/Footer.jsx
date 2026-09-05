@@ -1,5 +1,5 @@
 import React from "react";
-import { Code2, Github, Linkedin, Sparkles } from "lucide-react";
+import { Code2, Github, Linkedin } from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
 
 export default function Footer() {
@@ -19,7 +19,6 @@ export default function Footer() {
 
         <p className="text-xs text-slate-400 font-medium flex items-center gap-1.5">
           <span>Interactive 3D UI • Built with React, Node & MongoDB</span>
-          <Sparkles className="w-3.5 h-3.5 text-violet-400" />
         </p>
 
         <div className="flex items-center gap-4">

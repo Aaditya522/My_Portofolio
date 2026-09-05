@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ExternalLink, Github, ArrowUpRight, FolderGit2, Trash2, Pencil, Code2, Plus, Sparkles, Layers, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, Github, ArrowUpRight, FolderGit2, Trash2, Pencil, Code2, Plus, Layers, ChevronDown, ChevronUp } from "lucide-react";
 import { usePortfolio } from "../context/PortfolioContext";
 import ScrollReveal from "./ScrollReveal";
 import ThreeDCard from "./ThreeDCard";

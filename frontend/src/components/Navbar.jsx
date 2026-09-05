@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { LayoutDashboard, Menu, X, Code2, ArrowRight, Pencil, Sparkles } from "lucide-react";
+import { LayoutDashboard, Menu, X, Code2, ArrowRight, Pencil } from "lucide-react";
 import { useWorkspace } from "../context/WorkspaceContext";
 import { usePortfolio } from "../context/PortfolioContext";
 
